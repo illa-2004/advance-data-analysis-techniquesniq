@@ -1,0 +1,80 @@
+#Scenario: E-Commerce Platform Analysis
+#1. Time Series Analysis for Forecasting Sales
+#have historical monthly sales data, and you want to predict future sales to plan inventory.
+import pandas as pd
+import matplotlib.pyplot as plt
+from statsmodels.tsa.holtwinters import ExponentialSmoothing
+
+# Historical sales data (in thousands)
+data = {'Month': ['2023-01', '2023-02', '2023-03', '2023-04', '2023-05', '2023-06', '2023-07'],
+        'Sales': [50, 55, 53, 60, 62, 65, 70]}
+df = pd.DataFrame(data)
+df['Month'] = pd.to_datetime(df['Month'])
+df.set_index('Month', inplace=True)
+
+# Plotting the historical sales
+df.plot()
+plt.title('Historical Monthly Sales')
+plt.ylabel('Sales (in thousands)')
+plt.show()
+
+# Applying Exponential Smoothing for forecasting
+model = ExponentialSmoothing(df['Sales'], trend='add', seasonal=None, seasonal_periods=12)
+model_fit = model.fit()
+
+# Forecasting the next 3 months
+forecast = model_fit.forecast(steps=3)
+print("Sales Forecast for next 3 months:\n", forecast)
+
+#2. Sentiment Analysis on Customer Reviews
+#To analyze customer reviews to understand their satisfaction level and identify common issues.
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+import pandas as pd
+
+# Sample customer reviews
+reviews = pd.Series([
+    "The product quality is excellent, and delivery was quick!",
+    "Very disappointed with the service. My order arrived late.",
+    "Good value for money. Will definitely buy again.",
+    "Terrible product, broke after one use.",
+    "The website is user-friendly, and the customer support was helpful."
+])
+
+# Initializing sentiment analyzer
+sia = SentimentIntensityAnalyzer()
+
+# Analyzing sentiment
+sentiments = reviews.apply(lambda x: sia.polarity_scores(x))
+
+# Converting results to DataFrame for better visualization
+sentiment_df = pd.DataFrame(sentiments.tolist())
+reviews_df = pd.concat([reviews, sentiment_df], axis=1)
+reviews_df.columns = ['Review', 'Negative', 'Neutral', 'Positive', 'Compound']
+
+# Displaying results
+print(reviews_df)
+
+#3. Clustering Customers for Targeted Marketing
+#To segment customers based on their purchasing behavior for targeted marketing campaigns.
+  import numpy as np
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
+
+# Sample data: Customers' annual income and spending score
+data = np.array([[20, 50], [30, 70], [40, 60], [35, 80], [50, 90], [55, 85], [60, 40]])
+
+# Standardizing data
+scaler = StandardScaler()
+data_scaled = scaler.fit_transform(data)
+
+# Applying KMeans Clustering
+kmeans = KMeans(n_clusters=3)
+clusters = kmeans.fit_predict(data_scaled)
+
+# Plotting the clusters
+plt.scatter(data[:, 0], data[:, 1], c=clusters, cmap='viridis')
+plt.title('Customer Segmentation')
+plt.xlabel('Annual Income')
+plt.ylabel('Spending Score')
+plt.show()
